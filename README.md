@@ -23,11 +23,9 @@ beautiful, ugly, culturally appropriate, authentic, or suitable for removal.
 
 ## Demo
 
-> **Temporary workflow test.** This short clip verifies the repository video pattern. It will be replaced with a narrated or captioned final project walkthrough.
+[Watch the full demo video](copy_7B635987-1591-46D4-BB05-A4D93D8E334D.MOV)
 
-[![Short animated preview of the Jinxi Color Lens visualization](media/demo.gif)](media/demo.mp4)
-
-[Watch the full demo video](media/demo.mp4)
+This project walkthrough replaces the temporary workflow test video. Click the link above to open the video file; if GitHub does not offer inline playback, use **View raw** or download it to play locally.
 
 ## What this version supports
 

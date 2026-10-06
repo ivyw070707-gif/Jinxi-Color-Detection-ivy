@@ -23,9 +23,9 @@ beautiful, ugly, culturally appropriate, authentic, or suitable for removal.
 
 ## Demo
 
-[Watch the full demo video](copy_7B635987-1591-46D4-BB05-A4D93D8E334D.MOV)
+[Watch the full demo video](Demo_Video.MP4)
 
-This project walkthrough replaces the temporary workflow test video. Click the link above to open the video file; if GitHub does not offer inline playback, use **View raw** or download it to play locally.
+The full project walkthrough is available as `Demo_Video.MP4`. If GitHub does not offer inline playback, click **View raw** or download the file to play it locally.
 
 ## What this version supports
 

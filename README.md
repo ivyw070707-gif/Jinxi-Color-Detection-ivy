@@ -22,6 +22,7 @@ The system proposes regions for review. It does **not** classify objects as
 beautiful, ugly, culturally appropriate, authentic, or suitable for removal.
 
 ## Demo
+Since the video size is more than 10MB and can not be directly played here, Please Click the link below: 
 
 [Watch the full demo video](Demo_Video.MP4)
 

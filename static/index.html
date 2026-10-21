@@ -1692,12 +1692,14 @@
       if (view === "network") {
         renderNetwork(lastPayload?.candidates || []);
         el("#resultCaption").textContent = t("networkCopy");
-      el("#resultCaption").insertAdjacentHTML("beforeend", infoHelp(view)); return;
+        el("#resultCaption").insertAdjacentHTML("beforeend", infoHelp("network"));
+        return;
       }
       if (view === "diagnostics") renderDiagnostics();
       const source = view === "original" ? capturedUrl : resultImages[view];
       el("#resultImage").src = source || "";
       el("#resultCaption").textContent = t(captionKeys[view]);
+      el("#resultCaption").insertAdjacentHTML("beforeend", infoHelp(view));
       el("#downloadResult").href = source || "";
       el("#downloadResult").download = `jinxi-${view}.png`;
     }

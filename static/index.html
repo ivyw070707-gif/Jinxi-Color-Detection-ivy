@@ -663,6 +663,17 @@
       letter-spacing: .16em;
       text-transform: uppercase;
     }
+
+    .inline-info{display:inline-block;position:relative;margin-left:5px;vertical-align:middle;font-size:initial;letter-spacing:normal;text-transform:none;font-weight:400}
+    .inline-info>summary{display:inline-grid;place-items:center;list-style:none;width:19px;height:19px;border:1px solid #9bc5b4;border-radius:50%;color:#b8dfce;background:#9bc5b420;font:700 12px system-ui;cursor:pointer}
+    .inline-info>summary::-webkit-details-marker{display:none}
+    .inline-info>summary:focus-visible{outline:2px solid #e9bc69;outline-offset:3px}
+    .inline-info[open]>summary{color:#e9bc69;border-color:#e9bc69}
+    .inline-info .info-popup{position:absolute;z-index:100;top:calc(100% + 8px);left:0;width:min(290px,75vw);box-sizing:border-box;padding:12px 14px;background:#1e2c29;color:#efe9dc;border:1px solid #9bc5b4;border-radius:10px;box-shadow:0 14px 32px #0009;font:400 13px/1.55 system-ui;text-align:left;white-space:normal;overflow-wrap:break-word}
+    .inline-info.info-right .info-popup{left:auto;right:0}
+    .candidate-main{min-width:0}
+    .candidate-main .metric-help-row{display:block;line-height:1.9}
+    .chart-card{overflow:visible}
     .candidate-list { display: grid; gap: 8px; }
     .candidate {
       display: grid;
@@ -984,7 +995,7 @@
           </div>
 
           <section id="diagnosticPanel" class="idiom-panel" hidden></section>
-          <section id="networkPanel" class="idiom-panel" hidden><h3 data-i18n="networkTitle"></h3><p class="evidence-copy" data-i18n="networkCopy"></p><div id="evidenceNetwork"></div></section>
+          <section id="networkPanel" class="idiom-panel" hidden><h3 data-i18n="networkTitle"></h3><p class="evidence-copy" data-i18n="networkCopy"></p><div id="networkHelp"></div><div id="evidenceNetwork"></div></section>
           <h3 class="section-label" data-i18n="rankedCandidates">候选区域排名 · 同一画面内比较</h3>
           <div class="candidate-list" id="candidateList"></div>
 
@@ -1094,6 +1105,25 @@
     const el = (selector) => document.querySelector(selector);
     const els = (selector) => [...document.querySelectorAll(selector)];
 
+
+    const infoDefinitions={"combined":["综合分数是“优先查看顺序”，不是美丑或整改评分。它结合不同的颜色证据。","The combined score sets review priority, not beauty or removal advice. It combines different color clues."],"local":["局部对比衡量这块颜色与紧邻颜色的不同。高分代表在当前画面里更显眼，并不等于在整个锦溪都罕见。","Local contrast measures difference from nearby colors. Higher means more noticeable in this image, not necessarily rare across Jinxi."],"reference":["参考新颖度比较这块颜色与项目参考照片的不同程度。高分只意味着在有限参考样本里较少见。","Reference novelty measures how unusual this color is against the limited reference photos, not against all of Jinxi."],"delta":["ΔE00 是两种颜色在视觉上有多不同的指标；数值越高，通常看起来越不同。","ΔE00 estimates visible difference between two colors; higher usually means more different."],"percentile":["P 是新颖度百分位：P98 表示高于约 98% 的校准比较值，不是全镇有 98% 的概率罕见。","P is the novelty percentile. P98 means above about 98% of calibration comparisons, not a 98% chance of rarity across town."],"area":["面积指该颜色区域在当前截图中大约占多少像素，不是地面面积。","Area is approximate pixel coverage in this captured image, not physical ground area."],"chroma":["彩度提升是颜色相较周围有多鲜艳，不是美观程度。","Chroma lift is how much more vivid a color is than its surroundings, not a beauty score."],"network":["左侧节点是候选颜色区域，右侧是最接近的参考颜色。连线表示参考匹配，不是地理距离或相邻关系。点击左侧节点跳到对应评分。","Left nodes are candidate regions; right nodes are nearest reference colors. Lines show reference matches, not geographical distance or adjacency. Select a left node to jump to its scores."],"networkEdge":["线上的 ΔE00 是候选颜色与最接近参考颜色之间的色差；线的长度没有定量含义。","Edge ΔE00 compares the candidate with its nearest reference color; the drawn line length has no quantitative meaning."],"cielab":["CIELAB 用 a*（偏绿到偏红）和 b*（偏蓝到偏黄）描述颜色。每个点是一个颜色区域，点越大通常表示面积越大。","CIELAB uses a* (green to red) and b* (blue to yellow). Each dot is a color region; larger dots usually show greater area."],"flagged":["每组彩条属于一个候选区域；越长表示该项特征越高。条形颜色只是区分指标，不是区域真实色彩。","Each group of bars belongs to one candidate; longer bars mean higher feature values. Bar colors identify metrics, not actual region colors."],"overlay":["彩色轮廓表示检测到的颜色候选区域；编号与下方列表对应。这不是精确的物体分割。","Outlines show candidate color regions; numbers correspond to the ranking below. These are not exact object boundaries."],"original":["这张图是不带检测轮廓的原始拍摄画面。","The captured frame without detection outlines."],"mosaic":["色块图保留各颜色在照片中的大致位置，不是地理地图。","The mosaic preserves approximate color positions within the frame, not geographical coordinates."],"palette":["色卡宽度近似对应颜色在当前照片中的像素比例。","Palette widths roughly represent each color's pixel share in this frame."],"diagnostics":["图表解释哪些颜色和指标导致区域被标记，并不评价美丑。","Charts show color features behind the highlighted regions, not aesthetic judgments."]};
+    function infoHelp(key,right=false){
+      const entry=infoDefinitions[key];
+      if(!entry)return "";
+      const language=currentLanguage==="zh-CN"?0:1;
+      const label=language===0?"查看解释":"Explain this";
+      return '<details class="inline-info'+(right?' info-right':'')+'"><summary aria-label="'+label+'" title="'+label+'">i</summary><span class="info-popup" role="note">'+entry[language]+'</span></details>';
+    }
+    document.addEventListener("toggle",event=>{
+      const node=event.target;
+      if(node instanceof HTMLDetailsElement && node.matches(".inline-info") && node.open){
+        document.querySelectorAll(".inline-info[open]").forEach(other=>{if(other!==node)other.open=false});
+      }
+    },true);
+    document.addEventListener("pointerdown",event=>{
+      if(!event.target.closest(".inline-info"))
+        document.querySelectorAll(".inline-info[open]").forEach(node=>node.open=false);
+    });
     const translations = {
       "zh-CN": {
         introTitle: "开始前：这份证据能说明什么？",
@@ -1661,12 +1691,15 @@
       el("#downloadResult").hidden = view === "network";
       if (view === "network") {
         renderNetwork(lastPayload?.candidates || []);
-        el("#resultCaption").textContent = t("networkCopy"); return;
+        el("#resultCaption").textContent = t("networkCopy");
+        el("#resultCaption").insertAdjacentHTML("beforeend", infoHelp("network"));
+        return;
       }
       if (view === "diagnostics") renderDiagnostics();
       const source = view === "original" ? capturedUrl : resultImages[view];
       el("#resultImage").src = source || "";
       el("#resultCaption").textContent = t(captionKeys[view]);
+      el("#resultCaption").insertAdjacentHTML("beforeend", infoHelp(view));
       el("#downloadResult").href = source || "";
       el("#downloadResult").download = `jinxi-${view}.png`;
     }
@@ -1680,7 +1713,7 @@
       const ns="http://www.w3.org/2000/svg";
       function chart(title, subtitle, height=450) {
         const card=document.createElement("div"); card.className="chart-card";
-        const h=document.createElement("h3"); h.textContent=title; card.append(h);
+        const h=document.createElement("h3"); h.textContent=title; h.innerHTML += infoHelp(title.includes("CIELAB") ? "cielab" : "flagged",true); card.append(h);
         const p=document.createElement("p"); p.className="evidence-copy"; p.textContent=subtitle; card.append(p);
         const svg=document.createElementNS(ns,"svg"); svg.setAttribute("viewBox",`0 0 460 ${height}`); svg.setAttribute("role","img"); svg.setAttribute("aria-label",title); card.append(svg);
         const tip=document.createElement("div"); tip.className="chart-tip"; tip.setAttribute("aria-live","polite"); card.append(tip); grid.append(card);
@@ -1726,6 +1759,7 @@
     function renderNetwork(candidates) {
       const host = el("#evidenceNetwork");
       host.replaceChildren();
+      el("#networkHelp").innerHTML = infoHelp("network") + infoHelp("networkEdge");
       if (!candidates.length) { host.textContent = t("summaryEmpty"); return; }
       const ns = "http://www.w3.org/2000/svg";
       const svg = document.createElementNS(ns, "svg");
@@ -1773,9 +1807,9 @@
         item.innerHTML = `
           <div class="candidate-rank">${candidate.rank.replace("#", "")}</div>
           <div class="candidate-main">
-            <strong>${t("localLabel")} · ${t("candidateMain", { score: candidate.score.toFixed(1), delta: candidate.delta_e.toFixed(1) })}</strong>
-            <span>${t("candidateMeta", { area: candidate.area.toFixed(2), chroma: candidate.chroma_lift.toFixed(1), hex: candidate.hex })}</span>
-            <span>${t("referenceLabel")} · ΔE00 ${candidate.reference_delta_e.toFixed(1)} · ${t("candidateReference", { percentile: candidate.reference_percentile.toFixed(0), reference: candidate.closest_reference_hex })}</span>
+            <strong class="metric-help-row">${t("localLabel")} · ${t("candidateMain", { score: candidate.score.toFixed(1), delta: candidate.delta_e.toFixed(1) })}${infoHelp("combined")}${infoHelp("local")}${infoHelp("delta")}</strong>
+            <span class="metric-help-row">${t("candidateMeta", { area: candidate.area.toFixed(2), chroma: candidate.chroma_lift.toFixed(1), hex: candidate.hex })}${infoHelp("area")}${infoHelp("chroma")}</span>
+            <span class="metric-help-row">${t("referenceLabel")} · ΔE00 ${candidate.reference_delta_e.toFixed(1)} · ${t("candidateReference", { percentile: candidate.reference_percentile.toFixed(0), reference: candidate.closest_reference_hex })}${infoHelp("reference")}${infoHelp("percentile")}${infoHelp("delta")}</span>
           </div>
           <span class="candidate-swatch" style="background:${candidate.hex}" title="${candidate.hex}"></span>
         `;
